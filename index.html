@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>System</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    color: #eef3ff;
+    background: #050811;
+
+    background-image:
+        linear-gradient(
+            rgba(120,140,170,.08) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(120,140,170,.08) 1px,
+            transparent 1px
+        );
+
+    background-size: 55px 55px;
+}
+
+.box {
+    width: min(560px, 100%);
+    padding: 28px;
+
+    background: rgba(12,18,30,.97);
+
+    border: 1px solid rgba(150,170,200,.16);
+    border-radius: 24px;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.45);
+}
+
+.badge {
+    display: inline-block;
+
+    margin-bottom: 18px;
+    padding: 7px 13px;
+
+    color: #69e79a;
+
+    border: 1px solid rgba(105,231,154,.45);
+    border-radius: 999px;
+
+    font-size: 13px;
+    font-family: monospace;
+}
+
+h1 {
+    margin: 0 0 8px;
+
+    font-size: 29px;
+    letter-spacing: -1px;
+}
+
+.status {
+    color: #8f98aa;
+    margin-bottom: 22px;
+}
+
+.progress {
+    width: 100%;
+    height: 9px;
+
+    background: #182131;
+
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bar {
+    width: 0%;
+    height: 100%;
+
+    background: #69e79a;
+
+    border-radius: inherit;
+
+    transition: width .2s;
+}
+
+.percent {
+    margin-top: 9px;
+
+    text-align: right;
+
+    color: #69e79a;
+
+    font-family: monospace;
+}
+
+.log {
+    margin-top: 20px;
+    padding: 16px;
+
+    height: 250px;
+
+    overflow: hidden;
+
+    background: #060a11;
+
+    border: 1px solid rgba(150,170,200,.1);
+    border-radius: 14px;
+
+    color: #8490a3;
+
+    font-family: monospace;
+    font-size: 12px;
+
+    line-height: 1.65;
+}
+
+.log .green {
+    color: #69e79a;
+}
+
+.log .white {
+    color: #cbd4e3;
+}
+
+button {
+    width: 100%;
+
+    margin-top: 20px;
+    padding: 15px;
+
+    border: 0;
+    border-radius: 14px;
+
+    background: #243044;
+    color: #758197;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    cursor: not-allowed;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <div class="badge">
+        ● SYSTEM
+    </div>
+
+    <h1 id="title">
+        Удаление телефона
+    </h1>
+
+    <div class="status" id="status">
+        Подготовка системы...
+    </div>
+
+    <div class="progress">
+        <div class="bar" id="bar"></div>
+    </div>
+
+    <div class="percent" id="percent">
+        0%
+    </div>
+
+    <div class="log" id="log">
+        <span class="green">
+            &gt; system://initializing
+        </span>
+        <br>
+        &gt; Проверка устройства...
+        <br>
+        &gt; Подготовка...
+    </div>
+
+    <button disabled>
+        Подготовка системы...
+    </button>
+
+</div>
+
+
+<script>
+
+const logs = [
+
+    "> Подключение к локальному хранилищу...",
+
+    "> /DCIM",
+
+    "> /DCIM/Camera",
+
+    "> /DCIM/Screenshots",
+
+    "> /Pictures",
+
+    "> /Pictures/Instagram",
+
+    "> /Downloads",
+
+    "> /Documents",
+
+    "> /Music",
+
+    "> /Movies",
+
+    "> /Android",
+
+    "> /Android/data",
+
+    "> /Android/media",
+
+    "> /System",
+
+    "> /Library",
+
+    "> /Cache",
+
+    "> /Contacts",
+
+    "> /Messages",
+
+    "> Проверка фотографий...",
+
+    "> Проверка видео...",
+
+    "> Проверка документов...",
+
+    "> Сообщение: привет",
+
+    "> Сообщение: как дела?",
+
+    "> Сообщение: ок",
+
+    "> Сообщение: [архив]",
+
+    "> Проверка контактов...",
+
+    "> Контакты: 127",
+
+    "> Проверка приложений...",
+
+    "> Найдено приложений: 64",
+
+    "> Анализ пользовательских данных...",
+
+    "> Очистка временных файлов...",
+
+    "> Очистка кэша...",
+
+    "> Проверка системных компонентов...",
+
+    "> Подготовка финального этапа...",
+
+    "> Завершение операции..."
+
+];
+
+
+const fakeCode = [
+
+    "const storage = device.localStorage;",
+
+    "let files = scan('/DCIM');",
+
+    "files.forEach(file => process(file));",
+
+    "if (cache.exists) cache.clear();",
+
+    "system.prepareShutdown();",
+
+    "storage.status = 'clearing';",
+
+    "system.finalize();",
+
+    "process.nextStep();"
+
+];
+
+
+function startSimulation() {
+
+    const bar =
+        document.getElementById("bar");
+
+    const percent =
+        document.getElementById("percent");
+
+    const status =
+        document.getElementById("status");
+
+    const log =
+        document.getElementById("log");
+
+    const title =
+        document.getElementById("title");
+
+
+    let progress = 0;
+    let index = 0;
+
+
+    const timer = setInterval(() => {
+
+        progress +=
+            Math.floor(Math.random() * 4) + 1;
+
+
+        if (progress > 100) {
+            progress = 100;
+        }
+
+
+        bar.style.width =
+            progress + "%";
+
+
+        percent.textContent =
+            progress + "%";
+
+
+        if (index < logs.length) {
+
+            let line =
+                logs[index];
+
+
+            if (index % 7 === 0) {
+
+                line +=
+                    "<br><span class='white'>" +
+                    fakeCode[
+                        index % fakeCode.length
+                    ] +
+                    "</span>";
+
+            }
+
+
+            log.innerHTML +=
+                "<br>" + line;
+
+
+            log.scrollTop =
+                log.scrollHeight;
+
+
+            status.textContent =
+                line.replace(
+                    /<[^>]*>/g,
+                    ""
+                );
+
+
+            index++;
+
+        }
+
+
+        if (progress >= 100) {
+
+            clearInterval(timer);
+
+
+            title.textContent =
+                "Операция завершена";
+
+
+            status.textContent =
+                "Процесс завершён";
+
+
+            status.style.color =
+                "#69e79a";
+
+
+            log.innerHTML +=
+                "<br><br>" +
+                "<span class='green'>" +
+                "&gt; PROCESS_COMPLETE" +
+                "</span>";
+
+        }
+
+    }, 220);
+
+}
+
+
+/*
+    Автоматический запуск
+    через 2 секунды
+*/
+
+setTimeout(() => {
+
+    startSimulation();
+
+}, 2000);
+
+</script>
+
+</body>
+</html>
